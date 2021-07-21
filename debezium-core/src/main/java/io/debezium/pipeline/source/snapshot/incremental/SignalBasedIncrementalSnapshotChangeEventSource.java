@@ -214,7 +214,9 @@ public class SignalBasedIncrementalSnapshotChangeEventSource<T extends DataColle
                 final TableId currentTableId = (TableId) context.currentDataCollectionId();
                 currentTable = databaseSchema.tableFor(currentTableId);
                 if (currentTable == null) {
-                    break;
+                    LOGGER.warn("Table {} does not exist", currentTable);
+                    progressListener.skipTable(currentTableId);
+                    continue;
                 }
                 if (!context.maximumKey().isPresent()) {
                     context.maximumKey(jdbcConnection.queryAndMap(buildMaxPrimaryKeyQuery(currentTable), rs -> {

@@ -16,6 +16,10 @@ public interface SnapshotChangeEventSourceMetricsMXBean extends ChangeEventSourc
 
     int getRemainingTableCount();
 
+    int getSkippedTableCount();
+
+    String[] getSkippedTables();
+
     boolean getSnapshotRunning();
 
     boolean getSnapshotAborted();

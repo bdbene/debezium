@@ -19,6 +19,8 @@ public interface SnapshotProgressListener {
 
     void monitoredDataCollectionsDetermined(Iterable<? extends DataCollectionId> dataCollectionIds);
 
+    void skipTable(DataCollectionId dataCollectionId);
+
     void snapshotCompleted();
 
     void snapshotAborted();
@@ -41,6 +43,11 @@ public interface SnapshotProgressListener {
 
         @Override
         public void monitoredDataCollectionsDetermined(Iterable<? extends DataCollectionId> dataCollectionIds) {
+        }
+
+        @Override
+        public void skipTable(DataCollectionId dataCollectionId) {
+
         }
 
         @Override

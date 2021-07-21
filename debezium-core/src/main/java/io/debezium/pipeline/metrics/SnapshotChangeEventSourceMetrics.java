@@ -45,6 +45,7 @@ public class SnapshotChangeEventSourceMetrics extends PipelineMetrics implements
     private final AtomicReference<Object[]> chunkFrom = new AtomicReference<>();
     private final AtomicReference<Object[]> chunkTo = new AtomicReference<>();
 
+    private final Set<String> skippedTables = Collections.synchronizedSet(new HashSet<>());
     private final Set<String> capturedTables = Collections.synchronizedSet(new HashSet<>());
 
     public <T extends CdcSourceTaskContext> SnapshotChangeEventSourceMetrics(T taskContext, ChangeEventQueueMetrics changeEventQueueMetrics,
@@ -55,6 +56,11 @@ public class SnapshotChangeEventSourceMetrics extends PipelineMetrics implements
     @Override
     public int getTotalTableCount() {
         return this.capturedTables.size();
+    }
+
+    @Override
+    public int getSkippedTableCount() {
+        return this.skippedTables.size();
     }
 
     @Override
@@ -106,6 +112,11 @@ public class SnapshotChangeEventSourceMetrics extends PipelineMetrics implements
     }
 
     @Override
+    public String[] getSkippedTables() {
+        return skippedTables.toArray(new String[skippedTables.size()]);
+    }
+
+    @Override
     public void monitoredDataCollectionsDetermined(Iterable<? extends DataCollectionId> dataCollectionIds) {
         Iterator<? extends DataCollectionId> it = dataCollectionIds.iterator();
         while (it.hasNext()) {
@@ -114,6 +125,11 @@ public class SnapshotChangeEventSourceMetrics extends PipelineMetrics implements
             this.remainingTables.put(dataCollectionId.identifier(), "");
             capturedTables.add(dataCollectionId.identifier());
         }
+    }
+
+    @Override
+    public void skipTable(DataCollectionId dataCollectionId) {
+        skippedTables.add(dataCollectionId.identifier());
     }
 
     @Override
@@ -190,6 +206,7 @@ public class SnapshotChangeEventSourceMetrics extends PipelineMetrics implements
         rowsScanned.clear();
         remainingTables.clear();
         capturedTables.clear();
+        skippedTables.clear();
         chunkId.set(null);
         chunkFrom.set(null);
         chunkTo.set(null);
